@@ -29,12 +29,6 @@ btn = Button(17, pull_up=True)
 def run_process_and_animate():
     print("Button pressed")
     animator.switch("no")
-    # Switch back to idle after a short delay, regardless of process completion
-    def reset_animation():
-        time.sleep(1)  # Show "no" animation for 1 second
-        animator.switch("idle")
-    threading.Thread(target=reset_animation, daemon=True).start()
-
     # Run capture and upload in a separate thread
     def process():
         print("Run capture")
@@ -43,6 +37,8 @@ def run_process_and_animate():
         PROMPT = "Describe this image in less than 10 words."
         if result:
             upload_image_to_gemini(result, PROMPT, GOOGLE_API_KEY)
+        # Switch back to idle only after process is complete
+        animator.switch("idle")
     threading.Thread(target=process, daemon=True).start()
 
 btn.when_pressed = run_process_and_animate
