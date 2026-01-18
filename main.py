@@ -32,7 +32,7 @@ def run_process_and_animate():
     # Run capture and upload in a separate thread
     def process():
         print("Run capture")
-        result = capture("test1.jpg", "./")
+        result = capture("./data")
         print(result)
         PROMPT = "Describe this image in less than 10 words."
         if result:
