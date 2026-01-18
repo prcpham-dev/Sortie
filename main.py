@@ -7,6 +7,31 @@ from camera.camera import capture, upload_image_to_gemini
 from config import GOOGLE_API_KEY
 from faceAnimation.animations import load_gif, Animation, Animator
 
+# Gemini prompt
+PROMPT="""
+You are a waste-sorting assistant.
+
+Analyze the image and identify which bin the item should go to.
+
+Assign exactly ONE bin from the following list:
+  - recycle
+  - garbage
+  - paper
+  - compost
+In case of multiple items (a paper box with plastic lids), just assign "garbage"
+
+Rules:
+- Do NOT explain your reasoning.
+- Do NOT include items you are unsure about.
+- Do NOT invent new bin types.
+- If an item has multiple parts, list each part separately.
+
+Language requirement:
+- Answer in English, using 1 word only (the name of the bin)
+- Answer in all caps
+- Do NOT include emojis
+"""
+
 # OLED setup
 serial = i2c(port=1, address=0x3C)
 device = ssd1309(serial, width=128, height=64)
@@ -72,7 +97,6 @@ def run_process_and_animate():
         print("Run capture")
         result = capture("./data")
         print(result)
-        PROMPT = "Describe this image in less than 10 words."
         if result:
             resp = upload_image_to_gemini(result, PROMPT, GOOGLE_API_KEY)
         apply_response(resp)
