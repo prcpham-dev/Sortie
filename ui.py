@@ -19,7 +19,8 @@ animator = Animator(
     default="idle"
 )
 
-start_listener()
+# Run start_listener in a background thread to avoid blocking GPIO events
+threading.Thread(target=start_listener, daemon=True).start()
 
 FPS = 25
 FRAME_DELAY = 1 / FPS

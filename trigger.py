@@ -9,6 +9,7 @@ busy = threading.Lock()
 responses = queue.Queue()
 
 def run_process():
+    print("Run capture")
     result = capture("test1.jpg", "./")
     print(result)
     PROMPT="Describe this image in less than 10 words."
@@ -19,6 +20,7 @@ def run_process():
     busy.release()
         
 def on_button_press():
+    print("Button pressed")
     if busy.locked():
         return
     
