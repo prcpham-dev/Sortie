@@ -8,7 +8,10 @@ def capture(filepath, width=800, height=600) -> str:
     # Generate a filename based on the current timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"image_{timestamp}.jpg"
-    filepath = os.path.join(os.getcwd(), filename) if filepath == "" else filepath
+    if filepath == "":
+        filepath = os.path.join(os.getcwd(), filename)
+    elif os.path.isdir(filepath):
+        filepath = os.path.join(filepath, filename)
 
     # Build the rpicam command
     cmd = [
