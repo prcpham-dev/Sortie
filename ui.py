@@ -9,8 +9,8 @@ from trigger import events, start_listener
 serial = i2c(port=1, address=0x3C)
 device = ssd1309(serial, width=128, height=64)
 
-idle = Animation(load_gif("assets/idle.gif"), loop=True)
-no = Animation(load_gif("assets/no.gif"), loop=False)
+idle = Animation(load_gif("faceAnimation/assets/idle.gif"), loop=True)
+no = Animation(load_gif("faceAnimation/assets/no.gif"), loop=True)
 
 animator = Animator(
     {

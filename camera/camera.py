@@ -20,7 +20,7 @@ def capture(filename, filepath, width=800, height=600) -> str:
         "--width", str(width),
         "--height", str(height),
         "--quality", "75",
-        "-t", "150" 
+        "-t", "150"  # 2 seconds warm-up
     ]
 
     # Run the command

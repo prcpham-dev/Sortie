@@ -1,32 +1,54 @@
-from camera.camera import *
-from camera.config import *
+import time
+import threading
+from luma.core.interface.serial import i2c
+from luma.oled.device import ssd1309
+from gpiozero import Button
+from camera.camera import capture, upload_image_to_gemini
+from config import GOOGLE_API_KEY
+from faceAnimation.animations import load_gif, Animation, Animator
 
-result = capture("test1.jpg", "./")
-print(result)
-PROMPT="""
-You are a waste-sorting assistant.
+# OLED setup
+serial = i2c(port=1, address=0x3C)
+device = ssd1309(serial, width=128, height=64)
 
-Analyze the image and identify up to 5 distinct trash items.
+# Animations
+idle = Animation(load_gif("faceAnimation/assets/idle.gif"), loop=True)
+no = Animation(load_gif("faceAnimation/assets/no.gif"), loop=True)
 
-For each item:
-- Name the object briefly (1-3 words)
-- Assign exactly ONE bin from the following list:
-  - recycle
-  - waste
-  - cutlery
-  - compost
+animator = Animator(
+    {
+        "idle": idle,
+        "no": no
+    },
+    default="idle"
+)
 
-Rules:
-- Do NOT explain your reasoning.
-- Do NOT include items you are unsure about.
-- Do NOT invent new bin types.
-- If an item has multiple parts, list each part separately.
+# Button setup
+btn = Button(17, pull_up=True)
 
-Language requirement:
-- Answer in English only
-- Do NOT include emojis
-- Language informal, friendly
-- Limit your answer to max 50 words, the shorter the better
-"""
+def run_process_and_animate():
+    print("Button pressed")
+    animator.switch("no")
+    # Run capture and upload in a separate thread
+    def process():
+        print("Run capture")
+        result = capture("test1.jpg", "./")
+        print(result)
+        PROMPT = "Describe this image in less than 10 words."
+        if result:
+            upload_image_to_gemini(result, PROMPT, GOOGLE_API_KEY)
+        # Switch back to idle only after process is complete
+        animator.switch("idle")
+    threading.Thread(target=process, daemon=True).start()
 
-upload_image_to_gemini(result, PROMPT, GOOGLE_API_KEY)
+btn.when_pressed = run_process_and_animate
+
+FPS = 25
+FRAME_DELAY = 1 / FPS
+
+print("Ready to press button for animation and capture.")
+
+while True:
+    frame = animator.update()
+    device.display(frame)
+    time.sleep(FRAME_DELAY)
