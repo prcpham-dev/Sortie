@@ -1,6 +1,6 @@
 import time
 import threading
-from trigger import events, start_listener
+from unused.trigger import events, start_listener
 import matplotlib.pyplot as plt
 from animations import load_gif, Animation, Animator
 

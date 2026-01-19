@@ -4,7 +4,7 @@ from luma.core.interface.serial import i2c
 from luma.oled.device import ssd1309
 
 from animations import load_gif, Animation, Animator
-from trigger import events, start_listener
+from unused.trigger import events, start_listener
 
 serial = i2c(port=1, address=0x3C)
 device = ssd1309(serial, width=128, height=64)
