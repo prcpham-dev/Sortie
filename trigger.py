@@ -1,8 +1,25 @@
-import queue, threading
+import queue, sys
 from gpiozero import Button
 from signal import pause
 from camera.camera import *
 from config import *
+
+def trigger(name):
+    """
+    Public API to trigger an animation.
+    Can be called from anywhere.
+    """
+    events.put(name)
+
+def start_listener():
+    """
+    Temporary ENTER listener.
+    Replace later with GPIO / audio / AI.
+    """
+    print("Press ENTER to say NO")
+    while True:
+        sys.stdin.readline()
+        events.put("no")
 
 events = queue.Queue()
 responses = queue.Queue()

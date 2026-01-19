@@ -50,13 +50,6 @@ class Animator:
         self.current.reset()
 
     def switch(self, name, force=False):
-        """
-        force=False:
-          - if current.loop is True -> switch immediately
-          - if current.loop is False -> queue it (play after current finishes)
-        force=True:
-          - always switch immediately
-        """
         if force or self.current.loop:
             self.pending = None
             self._switch_now(name)
@@ -66,7 +59,6 @@ class Animator:
     def update(self):
         frame = self.current.next_frame()
 
-        # only happens when current.loop == False and it finished
         if frame is None:
             if self.pending is not None:
                 next_name = self.pending
